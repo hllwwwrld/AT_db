@@ -259,3 +259,15 @@ group by startdatetime, enddatetime, hours"""
     )
     res = cursor.fetchall()
     assert len(res) == 0
+
+def test_14():
+    cursor = connIntgr().cursor()
+    cursor.execute(
+        """select startdatetime, enddatetime, hours from shift_extended se 
+where "type" = 'SHIFT'
+and DATE_PART('hour', enddatetime - startdatetime) + date_part('minute', enddatetime - startdatetime)/60 != hours 
+and enddatetime::text not like '%23:59%'
+group by startdatetime, enddatetime, hours"""
+    )
+    res = cursor.fetchall()
+    assert len(res) == 0
