@@ -22,6 +22,13 @@ def connWfm():
                             port="5432")
 
 
+def clearDBbeforeImport(formatTT):
+    cursor = connIntgr().cursor()
+    cursor.execute('''delete from shift_extended 
+    where period = '{0}'
+    and org_unit_format_tt in ('{1}')'''.format(findPeriod(), "', '".join(formatTT)))
+
+
 # Прогружает в БД ВФМ запрос по поску смен
 def findShiftsInWfm(formatTT, updatedFrom):  # получает как параметры - ПП и дату, с которой отбираются изменения
     first = "'" + "', '".join(formatTT) + "'"  # полученный список ПП перевожу в строку
@@ -57,9 +64,11 @@ def findUpdatedFrom(formatTT):
     shiftAmount = int(input('Введите макс кол-во смен в выборке: '))
     updatedFrom = datetime.date.today().replace(day=1)  # дата отбора изменний первый день текущего месяца
     res = findShiftsInWfm(formatTT, updatedFrom)
+    print(updatedFrom, res)
     while len(res) > shiftAmount:
         updatedFrom += timedelta(days=1)
         res = findShiftsInWfm(formatTT, updatedFrom)
+        print(updatedFrom, res)
     return updatedFrom
 
 
@@ -72,9 +81,11 @@ def importFromWfm():
     formatTT = [i for i in input('Введите ПП в формате ММ МК: ').split()]
     url = 'https://magnit-integration.t.goodt.me/export/gendalf/timesheet'
     res = findUpdatedFrom(formatTT)
+    clearDBbeforeImport(formatTT)
     queryParams = {'format-tt': ', '.join(formatTT), 'period': findPeriod(), 'updated-from': f'{res}T00:00'}
     imprtRes = requests.get(url, params=queryParams, auth=('superuser', 'qwe'))
     print(', '.join(formatTT), f'{res}T00:00 - Параметры выгрузки')
     return imprtRes.status_code
+
 
 importFromWfm()

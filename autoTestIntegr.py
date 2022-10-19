@@ -98,7 +98,7 @@ def test_5():
         """select * from shift_extended se
 where "type" != 'SCHEDULE_REQUEST'
 and planned = true
-and "date" <= '{0}'
+and "date" < '{0}'
 order by ep_guid""".format(datetime.date.today())
     )
     res = cursor.fetchall()
