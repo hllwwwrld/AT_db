@@ -64,11 +64,11 @@ def findUpdatedFrom(formatTT):
     shiftAmount = int(input('Введите макс кол-во смен в выборке: '))
     updatedFrom = datetime.date.today().replace(day=1)  # дата отбора изменний первый день текущего месяца
     res = findShiftsInWfm(formatTT, updatedFrom)
-    print(updatedFrom, res)
+    print(updatedFrom, len(res))
     while len(res) > shiftAmount:
         updatedFrom += timedelta(days=1)
         res = findShiftsInWfm(formatTT, updatedFrom)
-        print(updatedFrom, res)
+        print(updatedFrom, len(res))
     return updatedFrom
 
 
