@@ -1,0 +1,14 @@
+allure-pytest==2.8.31
+allure-python-commons==2.8.31
+atomicwrites==1.4.0
+attrs==20.3.0
+colorama==0.4.4
+iniconfig==1.1.1
+packaging==20.8
+pluggy==0.13.1
+psycopg2==2.8.6
+py==1.10.0
+pyparsing==2.4.7
+pytest==6.2.1
+six==1.15.0
+toml==0.10.2
