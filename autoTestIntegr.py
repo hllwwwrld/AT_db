@@ -66,13 +66,13 @@ having count(*)>1"""
 def test_3():
     cursor = connIntgr().cursor()
     cursor.execute(
-        """select se.ep_guid, se."date", se."type"
+        '''select se.ep_guid, se."date", se."type"
 from shift_extended se
 join shift_extended se2
 on se.tab_id = se2.tab_id
 where se.ep_guid = se2.ep_guid
 and se."date" = se2."date"
-and se."type" != se2."type"""
+and se."type" != se2."type"'''
     )
     res = cursor.fetchall()
     assert len(res) == 0
