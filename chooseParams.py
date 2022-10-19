@@ -76,5 +76,3 @@ def importFromWfm():
     imprtRes = requests.get(url, params=queryParams, auth=('superuser', 'qwe'))
     print(', '.join(formatTT), f'{res}T00:00 - Параметры выгрузки')
     return imprtRes.status_code
-
-# hey
