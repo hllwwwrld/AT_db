@@ -261,6 +261,3 @@ group by startdatetime, enddatetime, hours"""
     )
     res = cursor.fetchall()
     assert len(res) == 0
-
-
-# hey
