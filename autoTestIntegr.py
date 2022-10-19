@@ -3,6 +3,7 @@ import pytest
 import allure
 import datetime
 
+
 # ПОДКЛЮЧЕНИЕ К БД ВФМ
 def connIntgr():
     return psycopg2.connect(database="outside_integration_t",
@@ -19,6 +20,7 @@ def connWfm():
                             password="TcmYez0uzXgK9",
                             host="stage-t-db.goodt.me",
                             port="5432")
+
 
 def test_0():
     cursor = connIntgr().cursor()
