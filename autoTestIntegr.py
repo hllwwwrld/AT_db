@@ -2,7 +2,7 @@ import psycopg2
 import pytest
 import allure
 import datetime
-
+import random
 
 # ПОДКЛЮЧЕНИЕ К БД ВФМ
 def connIntgr():
@@ -20,6 +20,13 @@ def connWfm():
                             password="TcmYez0uzXgK9",
                             host="stage-t-db.goodt.me",
                             port="5432")
+
+def createUnicId():
+    someSymbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    someSymbols = ' '.join(someSymbols)
+    someSymbols = someSymbols.split()
+    res = random.sample(someSymbols, 5)
+    return res
 
 
 def test_0():
@@ -261,3 +268,9 @@ group by startdatetime, enddatetime, hours"""
     )
     res = cursor.fetchall()
     assert len(res) == 0
+
+
+
+# 15 - Создания оргЮнита напрямую в ВФМ
+def test_15():
+    pass
