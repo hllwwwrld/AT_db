@@ -1,4 +1,4 @@
-# auto_db_requests
+# AT_db
 autotests for integr_db + requests
 
 Два файла - кофнфигурация перед выполнением тестов + сами тесты
