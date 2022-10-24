@@ -1,9 +1,9 @@
 import psycopg2
 
 
-# ПОДКЛЮЧЕНИЕ К БД ВФМ
-def connIntgr():
-    return psycopg2.connect(database="outside_integration_t",
+# ПОДКЛЮЧЕНИЕ К ПБД
+def connWfm():
+    return psycopg2.connect(database="magnit_birzha_test",
                             user="a_kosolapov",
                             password="TcmYez0uzXgK9",
                             host="stage-t-db.goodt.me",
