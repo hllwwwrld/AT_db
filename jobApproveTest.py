@@ -14,8 +14,8 @@ def create_file():
     cursor = connWfm().cursor()
     cursor.execute("""
     select s.id from shift s
-    where startdatetime  >= '2022-10-24'
-    and startdatetime < '2022-10-25'
+    where startdatetime  >= '2022-10-28'
+    and startdatetime < '2022-10-29'
     and worked_status = 'NOT_APPROVED'
     """)
     shiftsToApprove = cursor.fetchall()
@@ -29,11 +29,11 @@ def create_file():
 s = input()
 cursor = connWfm().cursor()
 cursor.execute(""" 
-select * from shift s
+select s.id from shift s
 where s.id in ({0})
 and (s.worked_status != 'APPROVED'
-or  updated::text not like '2022-10-24 23:59%')
+or  updated::text not like '2022-10-27 23:59%')
 """.format(s))
 res = cursor.fetchall()
 res = [str(i)[1:-2] for i in res]
-print(len(res), res)
+print(len(res), res, sep='\n')

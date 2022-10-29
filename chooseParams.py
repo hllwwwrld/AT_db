@@ -15,7 +15,7 @@ def connIntgr():
 
 # ПОДКЛЮЧЕНИЕ К ПБД
 def connWfm():
-    return psycopg2.connect(database="magnit_birzha_test",
+    return psycopg2.connect(database="magnit_wfm_qa",
                             user="a_kosolapov",
                             password="TcmYez0uzXgK9",
                             host="stage-t-db.goodt.me",
