@@ -32,6 +32,9 @@ def createUnicId():
     return res
 
 
+wfm_url = 'https://magnitqa-wfm.goodt.me'
+
+
 def createOrgUnit(isMainOrgUnitValid):
     if isMainOrgUnitValid:
         mainOrgUnitId = 'MainOrgUnit'
@@ -39,7 +42,7 @@ def createOrgUnit(isMainOrgUnitValid):
         mainOrgUnitId = 'amogus'
 
     unicId = createUnicId()
-    url = 'https://magnitqa-wfm.goodt.me/api/v1/integration-json/org-units'
+    url = '{0}/api/v1/integration-json/org-units'.format(wfm_url)
     jsonString = [
         {
             "outerId": unicId,
@@ -76,7 +79,7 @@ def createEmployeePosition(closed, isOrgUnitValid):
         orgUnitId = 'amogus'
 
     unicId = createUnicId()
-    url = 'https://magnitqa-wfm.goodt.me/api/v1/integration-json/employee-positions-full'
+    url = '{0}/api/v1/integration-json/employee-positions-full'.format(wfm_url)
     jsonString = [
         {
             "startWorkDate": "2021-01-01",
@@ -138,7 +141,7 @@ def createScheduleRequest(isEpValid):
         unicId = 'amogus2'
     startDate = str(datetime.date.today().replace(day=1))
     endDate = str(datetime.date.today().replace(day=10))
-    url = 'https://magnitqa-wfm.goodt.me/api/v1/integration-json/schedule-requests'
+    url = '{0}/api/v1/integration-json/schedule-requests'.format(wfm_url)
     queryParams = {'stop-on-error': 'false', 'delete-intersections': "true", 'split-requests': 'true', 'process-shifts': 'delete', 'start-date-shift-filter': 'true'}
     jsonString = [
         {
@@ -167,7 +170,7 @@ def create_removed_entity(unicId, dataType):
     elif dataType == 'SCHEDULE_REQUEST':
         startDate = '2022-10-30'
         endDate = '2022-10-31'
-    url = 'https://magnitqa-wfm.goodt.me/api/v1/integration-json/removed'
+    url = '{0}/api/v1/integration-json/removed'.format(wfm_url)
     queryParams = {'stop-on-error': 'false', 'open-prev-employee-position': 'false'}
     jsonString = [
         {
@@ -575,7 +578,7 @@ def test_create_double_schedule_request():
     """)  # запоминает последнюю запись импорта, чтобы исследовать запись импорту, созданную в тесте
     max_of_integrationcallresult = cursor.fetchall()
 
-    url = 'https://magnitqa-wfm.goodt.me/api/v1/integration-json/schedule-requests'
+    url = '{0}/api/v1/integration-json/schedule-requests'.format(wfm_url)
     queryParams = {'stop-on-error': 'false', 'delete-intersections': "true", 'split-requests': 'true', 'process-shifts': 'delete', 'start-date-shift-filter': 'true'}
     jsonString = [
         {
