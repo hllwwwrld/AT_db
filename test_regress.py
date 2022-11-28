@@ -190,30 +190,32 @@ def create_removed_entity(unicId, dataType):
         return imprtRes.text
 
 
+def getMaxOfIntegrationcallresult():
+    cursor = connWfm().cursor()
+
+    cursor.execute("""
+    select i.id, i.success
+    from integrationcallresult i
+    order by i.id desc
+    limit 1
+    """)  # запоминает последнюю запись импорта, чтобы исследовать запись импорту, созданную в тесте
+
+    max_of_integrationcallresult = cursor.fetchall()
+    return max_of_integrationcallresult
+
+
 # IntegrRegress - 1 - Создания оргЮнита напрямую в ВФМ
 def test_orgUnit():
     validTestFlag = True
     isMainOrgUnitValid = True
     cursor = connWfm().cursor()
 
-    cursor.execute("""
-    select i.id
-    from integrationcallresult i
-    order by i.id desc
-    limit 1
-    """)  # запоминает последнюю запись импорта, чтобы исследовать запись импорту, созданную в тесте
-    max_of_integrationcallresult = cursor.fetchall()
+    max_of_integrationcallresult = getMaxOfIntegrationcallresult()
 
     unicId, imprtRes = createOrgUnit(isMainOrgUnitValid)
 
     if '"success":true' in imprtRes and '"callType":"ORGANIZATION_UNIT_IMPORT"' in imprtRes:  # шаг 1 снова получаем самую новую запись импорта в таблице
-        cursor.execute("""
-        select i.id, i.success
-        from integrationcallresult i
-        order by i.id desc
-        limit 1
-        """)
-        max_of_integrationcallresult_2 = cursor.fetchall()
+        max_of_integrationcallresult_2 = getMaxOfIntegrationcallresult()
 
         if max_of_integrationcallresult[0][0] + 1 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана новая запись импорта
 
@@ -244,11 +246,9 @@ def test_orgUnit():
         else:
             validTestFlag = False
             print('3')
-            print(max_of_integrationcallresult[0][0] + 1, max_of_integrationcallresult_2[0][0])
     else:
         validTestFlag = False
         print('4')
-        print(imprtRes)
 
     assert (validTestFlag is True)
 
