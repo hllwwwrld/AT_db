@@ -1,5 +1,5 @@
 from sql_scripts import *
-from requests import *
+from send_requests import *
 from create_unic_id import create_unic_id
 
 
