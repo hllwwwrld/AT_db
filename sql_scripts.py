@@ -52,13 +52,13 @@ def find_org_unit_in_wfm(unic_id, with_main_org_unit):
     return res
 
 
-def is_import_res_succes(req_res):
+def is_import_res_succes(import_id):
     sql_request = """
                 select ievent.message from integrationevent ievent
                 join integrationcallresult icall
                 on ievent.integrationcallresult_id = icall.id
                 where icall.id = {0}
-                """.format(req_res)
+                """.format(import_id)
     res = run_sql_wfm(sql_request)
     return res
 
@@ -91,3 +91,27 @@ def find_ep_in_wfm(unic_id, closed, is_valid_org_unit):
                 """.format(unic_id, close_date, org_unit_id)
     res = run_sql_wfm(sql_request)
     return res
+
+
+def find_sr_in_wfm(unic_id, is_ep_valid):
+    if is_ep_valid:
+        employee_outer_id = "and e.outerid = '{0}'".format(unic_id)
+        position_outer_id = "and p.outerid = '{0}'".format(unic_id)
+    else:
+        employee_outer_id = ''
+        position_outer_id = ''
+    sql_request = f"""
+                select * from schedule_request sr
+                join employee e
+                on e.id = sr.employee_id
+                join position p
+                on p.id = sr.position_id
+                join schedule_request_alias sra
+                on sra.id = sr.alias_id
+                where sr.startdatetime = '{str(datetime.date.today().replace(day=1))} 00:00:00.000'
+                and sr.enddatetime = '{str(datetime.date.today().replace(day=10))} 23:59:00.000'
+                {employee_outer_id}
+                {position_outer_id}
+                and sra.outer_id = '750873459435863200'
+                """
+    return run_sql_wfm(sql_request)
