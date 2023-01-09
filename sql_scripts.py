@@ -115,3 +115,22 @@ def find_sr_in_wfm(unic_id, is_ep_valid):
                 and sra.outer_id = '750873459435863200'
                 """
     return run_sql_wfm(sql_request)
+
+
+def find_removed_entity_in_wfm(unic_id, data_type):
+    if data_type == 'EMPLOYEE_POSITION':
+        start_date = "'2021-01-01'"
+        end_date = "is null"
+    else:
+        start_date = datetime.date.today().replace(day=1)
+        end_date = f'= {datetime.date.today().replace(day=10)}'
+
+    sql_request = """
+                select * from log_jremoved
+                where employee_outer_id = '{0}'
+                and position_outer_id = '{0}'
+                and start_date = {1}
+                and end_date {2}
+                and type = '{3}'
+                """.format(unic_id, start_date, end_date, data_type)
+    return run_sql_wfm(sql_request)

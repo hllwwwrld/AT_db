@@ -174,13 +174,7 @@ def test_create_ep_without_orgunit():
         if max_of_integrationcallresult[0][0] + 1 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана запись импорта
 
             if max_of_integrationcallresult_2[0][1] is False:
-                sql_request = """
-                select ievent.message from integrationevent ievent
-                join integrationcallresult icall
-                on ievent.integrationcallresult_id = icall.id
-                where icall.id = {0}
-                """.format(max_of_integrationcallresult_2[0][0])
-                res = run_sql_wfm(sql_request)  # для нашей записи импорта запоминаем месседж об ошибке
+                res = is_import_res_succes(max_of_integrationcallresult_2[0][0])  # для нашей записи импорта запоминаем месседж об ошибке
 
                 if res[0][0] == 'Organization Unit of outer id amogus was not found'.format(unic_id):  # шаг 3 верный месседж об ошибке
                     sql_request = """
@@ -237,21 +231,7 @@ def test_create_sr():
         if max_of_integrationcallresult[0][0] + 2 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана новая запись импорта
 
             if max_of_integrationcallresult_2[0][1] is True:  # шаг 3 если запись импорта - успешно
-                sql_request = """
-                select * from schedule_request sr
-                join employee e
-                on e.id = sr.employee_id
-                join position p
-                on p.id = sr.position_id
-                join schedule_request_alias sra
-                on sra.id = sr.alias_id
-                where sr.startdatetime = '{1} 00:00:00.000'
-                and sr.enddatetime = '{2} 23:59:00.000'
-                and e.outerid = '{0}'
-                and p.outerid = '{0}'
-                and sra.outer_id = '750873459435863200'
-                    """.format(unic_id, str(datetime.date.today().replace(day=1)), str(datetime.date.today().replace(day=10)))
-                res = run_sql_wfm(sql_request)  # ищем наше отсутствие в БД по параметрам
+                res = find_sr_in_wfm(unic_id, is_ep_valid)  # ищем наше отсутствие в БД по параметрам
 
                 if len(res) == 1:  # шаг 4 если отсутствие создано в БД
                     pass
@@ -277,7 +257,7 @@ def test_create_sr_with_invalid_ep():
     valid_test_flag = True
     is_ep_valid = False
 
-    unic_id = create_unic_id()
+    unic_id = 'amogus2'
 
     # запоминает последнюю запись импорта, чтобы исследовать запись импорту, созданную в тесте
     max_of_integrationcallresult = get_max_of_integrationcallresult()
@@ -290,29 +270,11 @@ def test_create_sr_with_invalid_ep():
         if max_of_integrationcallresult[0][0] + 1 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана новая запись импорта
 
             if max_of_integrationcallresult_2[0][1] is False:  # шаг 3 новая запись импорта - не успешно
-                sql_request = """
-                select ievent.message from integrationevent ievent
-                join integrationcallresult icall
-                on ievent.integrationcallresult_id = icall.id
-                where icall.id = {0}
-                """.format(max_of_integrationcallresult_2[0][0])
-                res = run_sql_wfm(sql_request)  # для нашей записи импорта запоминаем месседж об ошибке
+                res = is_import_res_succes(max_of_integrationcallresult_2[0][0])  # для нашей записи импорта запоминаем месседж об ошибке
 
                 if res[0][0] == 'Position of the outer id {0} was not found'.format(unic_id):  # шаг 4 верный месседж об ошибке
-                    sql_request = """select * from schedule_request sr
-                    join employee e
-                    on e.id = sr.employee_id
-                    join position p
-                    on p.id = sr.position_id
-                    join schedule_request_alias sra
-                    on sra.id = sr.alias_id
-                    where sr.startdatetime = '{1} 00:00:00.000'
-                    and sr.enddatetime = '{2} 23:59:00.000'
-                    and e.outerid = '{0}'
-                    and p.outerid = '{0}'
-                    and sra.outer_id = '750873459435863200'
-                    """.format(unic_id, datetime.date.today().replace(day=1), datetime.date.today().replace(day=10))  # ищем в БД создаваемое отсутсвие
-                    res = run_sql_wfm(sql_request)
+                    # ищем в БД создаваемое отсутсвие
+                    res = find_sr_in_wfm(unic_id, is_ep_valid)
 
                     if len(res) == 0:  # шаг 5 отсутствие не создано
                         pass
@@ -366,7 +328,7 @@ def test_removed_ep():
                 and end_date is null
                 and type = '{1}'
                 """.format(unic_id, data_type)
-                res = run_sql_wfm(sql_reeuest)
+                res =
 
                 if len(res) == 1:  # шаг 4 создана запись удаления в БД
                     sql_reeuest = """
