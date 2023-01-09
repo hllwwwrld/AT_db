@@ -320,22 +320,10 @@ def test_removed_ep():
         if max_of_integrationcallresult[0][0] + 1 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана запись импорта
 
             if max_of_integrationcallresult_2[0][1] is True:  # шаг 3 запись импорта - успешно
-                sql_reeuest = """
-                select * from log_jremoved
-                where employee_outer_id = '{0}'
-                and position_outer_id = '{0}'
-                and start_date = '2021-01-01'
-                and end_date is null
-                and type = '{1}'
-                """.format(unic_id, data_type)
-                res =
+                res = find_removed_entity_in_wfm(unic_id, data_type)
 
                 if len(res) == 1:  # шаг 4 создана запись удаления в БД
-                    sql_reeuest = """
-                    select * from employeeposition ep
-                    where ep.card_number = '{0}'
-                    """.format(unic_id)
-                    res = run_sql_wfm(sql_reeuest)
+                    res = find_ep_in_wfm(unic_id, closed, is_valid_org_unit)
 
                     if len(res) == 0:  # шаг 5 назначение удалено фактически в БД
                         pass
@@ -381,32 +369,10 @@ def test_removed_sr():
             print(max_of_integrationcallresult_2[0][1])
 
             if max_of_integrationcallresult_2[0][1] is True:  # шаг 3 запись импорта - успешно
-                sql_requset = """
-                select * from log_jremoved
-                where employee_outer_id = '{0}'
-                and position_outer_id = '{0}'
-                and start_date = '{1}'
-                and end_date = '{2}'
-                and type = '{3}'
-                """.format(unic_id, datetime.date.today().replace(day=1), datetime.date.today().replace(day=10), data_type)
-                res = run_sql_wfm(sql_requset)
+                res = find_removed_entity_in_wfm(unic_id, data_type)
 
                 if len(res) == 1:  # шаг 4 создана запись удаления в БД
-                    sql_request = """
-                    select * from schedule_request sr
-                    join employee e
-                    on e.id = sr.employee_id
-                    join position p
-                    on p.id = sr.position_id
-                    join schedule_request_alias sra
-                    on sra.id = sr.alias_id
-                    where sr.startdatetime = '{1}'
-                    and sr.enddatetime = '{2}'
-                    and e.outerid = '{0}'
-                    and p.outerid = '{0}'
-                    and sra.outer_id = '750873459435863200'
-                    """.format(unic_id, datetime.date.today().replace(day=1), datetime.date.today().replace(day=10))
-                    res = run_sql_wfm(sql_request)
+                    res = find_sr_in_wfm(unic_id, is_ep_valid)
 
                     if len(res) == 0:  # шаг 5 - отсутствие удалено в БД
                         pass
@@ -436,7 +402,6 @@ def test_removed_invalid_ep():
     unic_id = 'amogus3'  # уникальный айдишник, по которому будем удалять назначение
     data_type = 'EMPLOYEE_POSITION'
 
-
 # запоминает последнюю запись импорта, чтобы исследовать запись импорту, созданную в тесте
     max_of_integrationcallresult = get_max_of_integrationcallresult()
 
@@ -448,20 +413,10 @@ def test_removed_invalid_ep():
         if max_of_integrationcallresult_2[0][0] == max_of_integrationcallresult[0][0] + 1:  # Шаг 2 - проверка, что сформирована новая запись импорта в БД
 
             if max_of_integrationcallresult_2[0][1] is False:  # шаг 3 - сформированная запись импорта - неуспешно
-                sql_request = """
-                select ievent.message from integrationevent ievent
-                join integrationcallresult icall
-                on ievent.integrationcallresult_id = icall.id
-                where icall.id = {0}
-                """.format(max_of_integrationcallresult_2[0][0])
-                res = run_sql_wfm(sql_request)
+                res = is_import_res_succes(max_of_integrationcallresult_2[0][0])
 
                 if res[0][0] == 'There is no employee with outer id: {0}'.format(unic_id):  # шаг 4 проверка верного сообщения об ошибке в БД  # Шаг 4 - в бд не создалось записи удаленной сущености по несуществ. назначению
-                    sql_request = """
-                    select * from log_jremoved lj
-                    where lj.employee_outer_id = '{0}'
-                    """.format(unic_id)
-                    res = run_sql_wfm(sql_request)
+                    res = find_removed_entity_in_wfm(unic_id, data_type)
 
                     if len(res) == 0:  # Шаг 5 - в бд не создалось записи удаленной сущености по несуществ. назначению
                         pass
@@ -507,21 +462,7 @@ def test_create_sr_double():
         if max_of_integrationcallresult[0][0] + 3 == max_of_integrationcallresult_2[0][0]:  # шаг 2 создана новая запись импорта
 
             if max_of_integrationcallresult_2[0][1] is True:  # шаг 3 если запись импорта - успешно
-                sql_request = """
-                select * from schedule_request sr
-                join employee e
-                on e.id = sr.employee_id
-                join position p
-                on p.id = sr.position_id
-                join schedule_request_alias sra
-                on sra.id = sr.alias_id
-                where sr.startdatetime = '{1} 00:00:00.000'
-                and sr.enddatetime = '{2} 23:59:00.000'
-                and e.outerid = '{0}'
-                and p.outerid = '{0}'
-                and sra.outer_id = '750873459435863200'
-                """.format(unic_id, datetime.date.today().replace(day=1), datetime.date.today().replace(day=10))
-                res = run_sql_wfm(sql_request)  # ищем наши отсутствия в БД по параметрам
+                res = find_sr_in_wfm(unic_id, is_ep_valid)  # ищем наши отсутствия в БД по параметрам
 
                 if len(res) == 1:  # шаг 4 если отсутствие не дублировалось
                     pass
