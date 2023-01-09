@@ -1,9 +1,9 @@
 import requests
 import json
-from db_conn import requests_auth
+from db_conn import requests_auth, wfm_addres
 import datetime
 
-wfm_url = 'https://magnitqa-wfm.goodt.me'
+wfm_url = wfm_addres()
 
 
 def create_api(api_type):
